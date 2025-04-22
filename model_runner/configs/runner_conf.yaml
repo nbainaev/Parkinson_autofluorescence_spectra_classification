@@ -1,0 +1,10 @@
+logging: True
+project_name: "parkinson_discrimination"
+split: "i_norm"
+log_update_rate: 10
+
+
+model_conf: ".\\model_runner\\configs\\model_conf.yaml"
+trainer_data_conf: ".\\model_runner\\configs\\trainer_datasets_conf.yaml"
+train_conf: ".\\model_runner\\configs\\trainer_train_conf.yaml"
+data_path: ".\\data\\raw_d_and_i_norm_for_classification.xlsx"

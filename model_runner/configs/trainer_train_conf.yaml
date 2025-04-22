@@ -1,0 +1,6 @@
+scheduler: True
+epochs: 200
+
+gamma: 0.98
+step_size: 1
+lr: 0.0005

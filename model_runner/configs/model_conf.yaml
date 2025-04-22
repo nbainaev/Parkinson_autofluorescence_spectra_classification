@@ -1,0 +1,4 @@
+hidden_dims: [256, 128, 64]
+out_dim: 1
+activation: "gelu"
+dropout_rate: 0.1
