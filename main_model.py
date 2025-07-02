@@ -1,6 +1,6 @@
-from preprocessing import d_norm, delete_hot_pixels, read_folder
+from src.preprocessing import d_norm, delete_hot_pixels, read_folder
 import pandas as pd
-from model import Discriminator
+from src.model import Discriminator, ParkinsonClassifier
 import torch
 
 data = pd.DataFrame(read_folder("data_for_prediction")).T

@@ -14,7 +14,7 @@ from sklearn.linear_model import LinearRegression
 import math
 import json
 import pickle
-from model import Discriminator
+from src.model import Discriminator
 
 def sigma(x, mean, N):
     y = x.shape[1]

@@ -1,4 +1,5 @@
-test_size: 0.25
+test_size: 0.15
+calib_size: 0.15
 random_state: 42
 batch_size: 32
 n_components: 50

@@ -37,4 +37,4 @@ if __name__ == '__main__':
         logger = None
 
     trainer = DiscriminatorTrainer(logger, config)
-    trainer.train()
+    trainer.run()

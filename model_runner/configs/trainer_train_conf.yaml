@@ -1,5 +1,6 @@
 scheduler: True
-epochs: 200
+calibration: True
+epochs: 150
 
 gamma: 0.98
 step_size: 1
