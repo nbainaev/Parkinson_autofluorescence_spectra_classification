@@ -1,27 +1,31 @@
 # Параметры моделей
 
-
-SVC: {
-    init_config: {
-      
-        base_model {
-          C: 10.0,
-          kernel: poly,
-          gamma: scale,
-          probability: true,
-          class_weight: balanced,
-          tol: 0.001,
-          random_state: 42,
+models: {
+    SVC: {
+        init_config: {
+            C: 10.0,
+            kernel: poly,
+            gamma: scale,
+            probability: true,
+            class_weight: balanced,
+            tol: 0.001,
+            random_state: 42,
         },
 
-      calibrator_config: {
-        method: isotonic,
-        random_state: 42
-        }
-
-    },
-    
-    weight: 1.0,
-    calibrator: True,
+        weight: 1.0,
+        calibrator: True,
+    }
 }
+
+calibrators: {
+  'SVC': {
+      init_config: {
+        fcnn_hidden_size: 32,
+        fcnn_lr: 0.01, 
+        fcnn_epochs: 1000, 
+        batch_size: 64
+    }
+  }
+}
+
 
