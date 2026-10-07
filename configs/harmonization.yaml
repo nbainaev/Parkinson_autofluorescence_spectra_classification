@@ -1,0 +1,88 @@
+# Phase 1: instrument-comparison / spectral-harmonization configuration
+# (current_tasks/double_blind_exp.md, Parts I, IV-XVI).
+#
+# This is NOT a calibration-transfer-function config: per Part XXXVII the
+# computed curves are "empirical mean-spectrum instrument harmonization"
+# coefficients, not a physical intensity calibration.
+
+instruments:
+  old:
+    config: configs/instrument_old.yaml
+    role: reference
+  new_pd:
+    config: configs/instrument_new1.yaml
+    role: new_pd_department
+  new_control:
+    config: configs/instrument_new2_controls_only.yaml
+    role: new_control_department
+
+wavelength_alignment:
+  # Search window for the cross-correlation-based delta_lambda estimate
+  # (Part VII.3). Symmetric, configurable, fixed before any result was seen.
+  shift_search_range_nm: [-5.0, 5.0]
+  shift_search_step_nm: 0.02
+
+  # max_allowed_shift_nm: derivation (Part VIII -- "не выбирать threshold после
+  # просмотра результата", so this was computed from the OLD instrument's own
+  # wavelength grid spacing BEFORE running any shift estimation):
+  #   old_waves = build_dataset(InstrumentConfig.from_yaml('configs/instrument_old.yaml')).waves
+  #   step = np.diff(old_waves)            -> mean=1.0110 nm, median=1.0090 nm,
+  #                                            std=0.0103 nm, min=0.9975, max=1.0325 nm
+  #   n_points = 278, range = 401.82-681.87 nm
+  # Rule used: half of one OLD wavelength bin (spec Part VIII: "величина
+  # превышает примерно половину-один wavelength bin старого прибора"). We take
+  # the conservative (smaller, i.e. more sensitive) half-bin choice using the
+  # MEDIAN step, rounded to 3 significant figures:
+  #   max_allowed_shift_nm = median_step / 2 = 1.0090 / 2 = 0.5045 -> 0.505 nm
+  max_allowed_shift_nm: 0.505
+  # informational cross-check, not itself used as a second independent gate
+  max_allowed_shift_bins: 0.5
+
+  n_bootstrap: 500
+  bootstrap_seed: 42
+
+# Savitzky-Golay smoothing used for the first-derivative wavelength-shift
+# diagnostic (Part VII.2) and inside the QC pass. Reuses configs/qc.yaml's
+# savgol_window/polyorder (11, 3) since that window was already chosen there
+# as a moderate smoothing setting appropriate for this ~1 nm sampled,
+# ~278-point grid, and Part VII.2 only asks for "умеренное" (moderate)
+# smoothing -- no reason to pick a second, different value.
+savgol:
+  window: 11
+  polyorder: 3
+
+# Transfer-curve smoothing (Part XII). Deliberately narrower / gentler than
+# nothing-but not as wide as the QC savgol window, so it removes pointwise
+# ratio noise without flattening real, wavelength-dependent instrument
+# response structure (e.g. a grating-efficiency curve extending over tens of
+# nm is preserved; single-point spikes from near-zero denominators are not).
+# window=15 (~15 nm at this sampling) / polyorder=2 is a conservative choice:
+# large enough to reject single/adjacent-point noise, small enough that it
+# cannot by itself erase multi-nm-scale spectral-response curvature.
+transfer_smoothing:
+  method: savgol
+  window: 15
+  polyorder: 2
+  # denominator guard: wavelengths where the reference-domain-source (denominator)
+  # curve is below this fraction of its own max are excluded (K set to NaN,
+  # filled by interpolation before smoothing) -- Part XII.1
+  denom_near_zero_rel_threshold: 0.02
+  # edge wavelengths excluded from the *raw* ratio entirely (both ends) before
+  # smoothing/interpolation -- Part XII.2. Kept small: only the outermost
+  # points, where QC's own SNR/edge effects are most likely to dominate.
+  edge_exclude_n_points: 3
+
+# Divergence threshold for the PD-derived vs Control-derived transfer-curve
+# comparison on new_pd (Part XI). No number is given in the spec; chosen here,
+# before inspecting the actual curves, as: curves are considered to
+# "diverge substantially" (WARNING) if Pearson correlation < 0.90 OR spectral
+# angle > 0.26 rad (~15 degrees). Rationale: two transfer curves built from
+# the same physical instrument response but different clinical subgroups
+# should differ only by finite-sample noise; r<0.90 or >15 deg of spectral
+# angle is well beyond what plausible noise alone would produce on smoothly
+# varying, area-normalized mean spectra of this SNR.
+transfer_pd_control_divergence:
+  min_correlation: 0.90
+  max_spectral_angle_rad: 0.2618
+
+random_seed: 42

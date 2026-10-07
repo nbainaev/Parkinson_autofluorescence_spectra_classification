@@ -1,0 +1,11 @@
+# "old" instrument: STS spectrometer (S/N S07279). 166 patients (by GUID: see
+# data_audit.json for the exact GUID-level count), both Parkinson and control
+# present -> eligible for classification per build_project_and_exp.md section 0/33.
+instrument:
+  id: old
+  model: "STS s/n S07279 b/n 1200 API v 2.46"
+  serial_number: "S07279"
+  # exact match against the 'Оборудование' column
+  raw_device_string: "Spectometer: Подключены - контроллер: USB24A_PG_001; Спектрометр: STS s/n S07279 b/n 1200 API v 2.46"
+  has_both_classes: true
+data_config: configs/data.yaml

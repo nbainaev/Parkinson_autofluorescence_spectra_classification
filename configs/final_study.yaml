@@ -1,0 +1,17 @@
+random_seed: 42
+preprocessing: E
+patient_aggregation: mean_probability
+threshold_selection: youden_j_on_development_oof
+include_new_control_in_development: true
+models:
+  linear_svm: {C: [0.1, 1.0, 10.0], calibrate: true, role: co_primary}
+  pls_logreg: {n_components: [3, 8], C: [1.0], calibrate: false, role: co_primary}
+  logreg: {C: [0.1, 1.0, 10.0], penalties: [l1, l2], calibrate: false, role: sensitivity}
+feature_regions:
+  importance_percentile: 90
+  minimum_fold_fraction: 0.8
+  grouped_region_points: 5
+  pre_existing_hypotheses_nm: [[416, 425], [467, 500], [537, 561]]
+sensitivity:
+  no_transfer_model: linear_svm
+  old_only_model: linear_svm

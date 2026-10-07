@@ -1,0 +1,13 @@
+# "new2" instrument: Optosky spectrometer S/N 25081X37ABX23233. Fully
+# disjoint patient set from the other two instruments; almost entirely
+# control (19/21 patients by GUID). Per build_project_and_exp.md section 33:
+# not used for Parkinson classification at this stage (no viable both-class
+# split); reserved for later instrument-harmonization / domain-shift /
+# external-QC work.
+instrument:
+  id: new2
+  model: "Optosky ATP10100000"
+  serial_number: "25081X37ABX23233"
+  raw_device_string: "Подключены: |USB24A_PG_001|Спектрометр:Optosky|ATP10100000|s/n 25081X37ABX23233"
+  has_both_classes: false
+data_config: configs/data.yaml

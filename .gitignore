@@ -1,0 +1,9 @@
+outputs/
+.venv/
+.claude/
+.pycache/
+.pytest_cache/
+catboost_info/
+current_work/
+current_tasks/
+data/

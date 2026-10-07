@@ -1,0 +1,11 @@
+# "new1" instrument: Optosky spectrometer S/N 24361X39ABX23130. By GUID, its
+# patients overlap 100% with the "old" (STS) instrument's patient set (same
+# people re-measured on a second device) but both classes are present in this
+# device's own records -> eligible for classification.
+instrument:
+  id: new1
+  model: "Optosky ATP10100000"
+  serial_number: "24361X39ABX23130"
+  raw_device_string: "Подключены: |USB24A_PG_001|Спектрометр:Optosky|ATP10100000|s/n 24361X39ABX23130"
+  has_both_classes: true
+data_config: configs/data.yaml

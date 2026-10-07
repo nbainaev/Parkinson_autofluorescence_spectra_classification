@@ -1,0 +1,47 @@
+# Shared data-loading configuration for patients_database.xlsx.
+# Per-instrument configs (instrument_*.yaml) reference this file and add an
+# instrument filter on top.
+
+data_path: data/patients_database.xlsx
+sheet_name: patients
+
+# Identity columns.
+# NOTE: 'ID пациента' (MG-1-N) is NOT used as the patient/grouping key: the
+# build_master_table.py merge assigns MG-1-N independently to new-department-1
+# (2026 cohort, from device filenames) and old-department-1 (legacy MG-N ->
+# Old ID to MG.xlsx) patients, with no shared counter -> 16 confirmed
+# collisions (MG-1-4..MG-1-19) where two different real patients (different
+# age/sex/GUID/diagnosis) share one MG-1-N id. See current_tasks/build_project_and_exp.md
+# discussion. 'ID исследования' (per-visit GUID) has zero target conflicts,
+# zero cross-device spread, and zero many-to-one collisions against MG id, so
+# it is used as patient_id instead (per user decision 2026-08-27). Consequence:
+# a real person who attended two separate sessions on the same instrument is
+# treated as two independent "patients" for grouping/splitting purposes.
+patient_id_col: "ID исследования"
+legacy_mg_id_col: "ID пациента"          # kept only for audit/report readability
+instrument_col: "Оборудование"
+
+# Identity-merge evidence columns (spectra_ml.identity.resolve_canonical_patient_ids).
+# Two GUIDs sharing one legacy_mg_id_col value within the same instrument are
+# collapsed into one canonical patient id ONLY if age/sex/target agree and the
+# timestamps (if any) agree on calendar day -- see identity.py and
+# outputs/identity_fix/merge_audit.json for the audited real-data result.
+age_col: "Возраст пациента (лет)"
+sex_col: "Пол пациента (м|ж)"
+timestamp_col: ".Время"
+
+# Target.
+target_col: "Болезнь Паркинсона (да|нет)"
+target_map:
+  "да": 1
+  "нет": 0
+# any other value (blank/NaN/other text) -> target is missing, row dropped from
+# modeling and reported in data_audit.json
+
+# Wavelength columns: identified by header value (nm), not fixed column index,
+# so the loader stays correct if columns are inserted/removed upstream.
+wavelength_header_row_hint: "Pulses|Wavelenghts"  # marker column immediately before the grid
+wavelength_min_nm: 401.7
+wavelength_max_nm: 682.7
+
+random_seed: 42

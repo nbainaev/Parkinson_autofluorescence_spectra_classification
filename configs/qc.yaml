@@ -1,0 +1,39 @@
+# Stage 2 QC thresholds. All are FIXED physical/engineering rules (not fit from
+# the data distribution), so they may be applied directly without a fit/transform
+# split -- see build_project_and_exp.md section 5. The one exception (shape
+# outlier detector) is fit/transform and explicitly marked below.
+
+qc:
+  # -- hot pixels / spikes (local Hampel-like detector) --
+  hot_pixel_half_window: 4        # points each side used for local median/MAD
+  hot_pixel_mad_threshold: 6.0    # local |residual| / (1.4826*MAD) above this = spike candidate
+  hot_pixel_max_width: 2          # contiguous spike run <= this many points -> correctable hot pixel
+  hot_pixel_max_count: 5          # more than this many isolated hot pixels in one spectrum -> HARD_FAIL
+  systematic_channel_fraction: 0.3  # wavelength flagged as spike in > this fraction of all spectra -> systematic defective channel (reported separately, not penalized per-spectrum)
+  interpolate_hot_pixels: true    # if true, correctable (narrow) hot pixels are linearly interpolated from neighbors
+
+  # -- negative values --
+  negative_fraction_hard_fail: 0.3     # fraction of points < 0
+  negative_area_fraction_hard_fail: 0.1  # |negative area| / total |area|
+
+  # -- weak signal / SNR (Savitzky-Golay residual noise, robust) --
+  savgol_window: 11
+  savgol_polyorder: 3
+  snr_hard_fail: 3.0
+  snr_soft_warning: 6.0
+
+  # -- saturation / clipping (no known detector max -> flat-plateau heuristic) --
+  # Tight on purpose: a smooth fluorescence peak is naturally broad, so "near max" must
+  # mean near-FLAT-at-the-ceiling (ADC clipping), not just close to the true maximum.
+  saturation_near_max_rel: 0.002   # points within this fraction of spectrum range from max count as "near max"
+  saturation_plateau_run_hard_fail: 8   # contiguous near-max run length (points) -> HARD_FAIL
+
+  # -- flat / corrupted --
+  flat_dynamic_range_rel_hard_fail: 0.02  # (p95-p5)/(|median|+eps) below this -> flat
+  duplicate_value_fraction_hard_fail: 0.5  # fraction of points equal to the modal value
+
+  # -- shape outlier (fit/transform; EDA-only full-dataset use; SOFT_WARNING only) --
+  shape_outlier_enabled: false
+  shape_outlier_contamination: 0.05
+
+random_seed: 42
